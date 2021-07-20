@@ -1,6 +1,6 @@
 ### 把容器镜像跑在kubernates集群里
 
-先看一下发布的目录结构
+先看一下发布所使用的配置文件的目录结构
 
 ```
 Guobins-MBP:k8s-deployments guobin$ tree
