@@ -1,0 +1,16 @@
+controller:
+  hostNetwork: true
+#  dnsPolicy: ClusterFirstWithHostNet
+#  Kind: Deployment
+  replicaCount: 2
+  service:
+    externalTrafficPolicy: Local
+    type: NodePort
+    httpPorts:
+      - port: 80
+        targetPort: http
+        nodePort: 30001
+defaultBackend:
+#  enabled: false
+  image:
+    repository: registry.aliyuncs.com/google_containers/defaultbackend
