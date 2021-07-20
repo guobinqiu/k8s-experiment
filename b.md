@@ -1,4 +1,6 @@
-### 容器化你本地的go应用
+### 把你本地的go web应用制成容器镜像
+
+容器化可以基于docker或者containerd，推荐containerd，containerd还没来得及学，本案例采用docker
 
 #### 1. 创建一个简单的go web app
 
@@ -80,9 +82,9 @@ CMD go run main.go
 
 #### 3. 构建容器镜像
 
-我们添加一个叫build.sh的shell脚本来执行镜像的构建
+我们添加一个叫dockerize.sh的shell脚本来构建容器镜像
 
-build.sh:
+dockerize.sh:
 ```
 docker build -t qiuguobin/go-web-app:latest .
 ```
@@ -94,8 +96,8 @@ docker build -t qiuguobin/go-web-app:latest .
 
 项目根目录下执行
 ```
-chmod +x ./build.sh
-./buid.sh
+chmod +x ./dockerize.sh
+./dockerize.sh
 ```
 
 构建成功后我们执行`docker images`将会输出

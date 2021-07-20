@@ -1,4 +1,4 @@
-### 把go的web镜像跑在kubernates集群里
+### 把容器镜像跑在kubernates集群里
 
 先看一下发布的目录结构
 

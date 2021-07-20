@@ -1,2 +1,4 @@
 /vendor/*
 !/vendor/vendor.json
+.DS_Store
+.idea/
