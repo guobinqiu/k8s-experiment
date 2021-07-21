@@ -7,7 +7,7 @@ Kubernates(又称k8s)是什么？抄概念没意思，通俗讲kubernates就是�
 多个服务器上跑，本个服务器都跑上对方的副本，如何做到这些呢？这就是kubernates容器编排工具可以帮我们做到的，它
 主要通过定义各种配置文件来调度容器内的服务。
 
-要用kubernates发布一个go web应用，主要经历三大过程
+要用kubernates发布一个go web应用，主要经历3大过程
 
 1. [搭建kubernates集群](install-cluster.md)有多种方式
    - 购买现成的各家云服务商已经整合好的集群服务
