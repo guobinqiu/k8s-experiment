@@ -69,3 +69,14 @@ mysql-pv-volume   1Gi        RWO            Retain           Bound    default/my
 NAME             STATUS   VOLUME            CAPACITY   ACCESS MODES   STORAGECLASS   AGE
 mysql-pv-claim   Bound    mysql-pv-volume   1Gi        RWO            manual         4d23h
 ```
+
+#### All Secrets
+
+```
+[guobin@k8s-master ~]$ kubectl get secret
+NAME                                  TYPE                                  DATA   AGE
+default-token-89dp6                   kubernetes.io/service-account-token   3      9d
+haproxy-haproxy-ingress-token-vvtrm   kubernetes.io/service-account-token   3      46h
+mysql-secret                          Opaque                                4      5d22h
+sh.helm.release.v1.haproxy.v1         helm.sh/release.v1                    1      46h
+```

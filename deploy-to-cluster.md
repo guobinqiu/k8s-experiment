@@ -63,12 +63,43 @@ kubernates有几种对象：deployment、service、ingress、pv、pvc、secret�
 kubectl apply -f app-deployment.yml
 ```
 
+验证一下
+```
+[guobin@k8s-master ~]$ kubectl get deployments
+NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
+go-web-app-deployment                     2/2     2            2           4d2h
+
+[guobin@k8s-master ~]$ kubectl get pods --all-namespaces
+NAMESPACE     NAME                                                       READY   STATUS    RESTARTS   AGE
+default       go-web-app-deployment-6fd8d76dff-gdmbn                     1/1     Running   0          4d2h
+default       go-web-app-deployment-6fd8d76dff-ww6g5                     1/1     Running   0          4d2h
+default       mysql-6db984b79d-jq7qq                                     1/1     Running   0          4d23h
+kube-system   coredns-7ff77c879f-gh8gf                                   1/1     Running   2          8d
+kube-system   coredns-7ff77c879f-rjfkk                                   1/1     Running   2          8d
+kube-system   etcd-k8s-master                                            1/1     Running   2          8d
+kube-system   kube-apiserver-k8s-master                                  1/1     Running   2          8d
+kube-system   kube-controller-manager-k8s-master                         1/1     Running   2          8d
+kube-system   kube-flannel-ds-8xdvr                                      1/1     Running   1          8d
+kube-system   kube-flannel-ds-tppxx                                      1/1     Running   2          8d
+kube-system   kube-proxy-szzpx                                           1/1     Running   1          8d
+kube-system   kube-proxy-td56t                                           1/1     Running   2          8d
+kube-system   kube-scheduler-k8s-master                                  1/1     Running   2          8d
+```
+
 ###### [创建一个service](https://kubernetes.io/docs/concepts/services-networking/service/)
 
 暴露deployment创建的pods供集群外部访问，暴露端口为：30000（NodePort方式）
 
 ```
 kubectl apply -f app-service.yml
+```
+
+验证一下
+```
+[guobin@k8s-master ~]$ kubectl get services
+NAME                                      TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                      AGE
+go-web-service                            NodePort    10.1.12.74    <none>        8080:30000/TCP               4d
+kubernetes                                ClusterIP   10.1.0.1      <none>        443/TCP                      8d
 ```
 
 #### 部署mysql服务
@@ -78,6 +109,18 @@ kubectl apply -f app-service.yml
 ```
 kubectl apply -f mysql-pv.yml
 kubectl apply -f mysql-pvc.yml
+```
+
+验证一下
+
+```
+[guobin@k8s-master ~]$ kubectl get pv
+NAME              CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                    STORAGECLASS   REASON   AGE
+mysql-pv-volume   1Gi        RWO            Retain           Bound    default/mysql-pv-claim   manual                  4d23h
+
+[guobin@k8s-master ~]$ kubectl get pvc
+NAME             STATUS   VOLUME            CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+mysql-pv-claim   Bound    mysql-pv-volume   1Gi        RWO            manual         4d23h
 ```
 
 为什么有了pv，还要pvc？
@@ -95,10 +138,43 @@ pod <--> pvc <--> pv good
 kubectl apply -f mysql-secret.yml
 ```
 
+验证一下
+
+```
+[guobin@k8s-master ~]$ kubectl get secret
+NAME                                  TYPE                                  DATA   AGE
+mysql-secret                          Opaque                                4      5d22h
+```
+
 ###### 创建一个deployment
 
 ```
 kubectl apply -f mysql-deployment.yml
+```
+
+验证一下
+
+```
+[guobin@k8s-master ~]$ kubectl get deployments
+NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
+go-web-app-deployment                     2/2     2            2           4d2h
+mysql                                     1/1     1            1           4d23h
+
+[guobin@k8s-master ~]$ kubectl get pods --all-namespaces
+NAMESPACE     NAME                                                       READY   STATUS    RESTARTS   AGE
+default       go-web-app-deployment-6fd8d76dff-gdmbn                     1/1     Running   0          4d2h
+default       go-web-app-deployment-6fd8d76dff-ww6g5                     1/1     Running   0          4d2h
+default       mysql-6db984b79d-jq7qq                                     1/1     Running   0          4d23h
+kube-system   coredns-7ff77c879f-gh8gf                                   1/1     Running   2          8d
+kube-system   coredns-7ff77c879f-rjfkk                                   1/1     Running   2          8d
+kube-system   etcd-k8s-master                                            1/1     Running   2          8d
+kube-system   kube-apiserver-k8s-master                                  1/1     Running   2          8d
+kube-system   kube-controller-manager-k8s-master                         1/1     Running   2          8d
+kube-system   kube-flannel-ds-8xdvr                                      1/1     Running   1          8d
+kube-system   kube-flannel-ds-tppxx                                      1/1     Running   2          8d
+kube-system   kube-proxy-szzpx                                           1/1     Running   1          8d
+kube-system   kube-proxy-td56t                                           1/1     Running   2          8d
+kube-system   kube-scheduler-k8s-master                                  1/1     Running   2          8d
 ```
 
 ###### 创建一个service
@@ -107,6 +183,16 @@ kubectl apply -f mysql-deployment.yml
 
 ```
 kubectl apply -f mysql-service.yml
+```
+
+验证一下
+
+```
+[guobin@k8s-master ~]$ kubectl get services
+NAME                                      TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                      AGE
+go-web-service                            NodePort    10.1.12.74    <none>        8080:30000/TCP               4d
+kubernetes                                ClusterIP   10.1.0.1      <none>        443/TCP                      8d
+mysql                                     ClusterIP   None          <none>        3306/TCP                     4d2h
 ```
 
 ###### 彻底删除
@@ -165,13 +251,55 @@ helm install haproxy incubator/haproxy-ingress --create-namespace --namespace de
 haproxy-ingress-values.yaml这个文件告诉helm，你希望它怎么安装你的haproxy ingress服务。
 这里我们让haproxy暴露一个30001端口供外部internet访问
 
+验证一下
+
+```
+[guobin@k8s-master ~]$ helm list
+NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
+haproxy default         1               2021-07-19 16:59:14.961230318 +0800 CST deployed        haproxy-ingress-0.0.28  0.7.2      
+
+[guobin@k8s-master ~]$ kubectl get deployments
+NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
+go-web-app-deployment                     2/2     2            2           4d2h
+haproxy-haproxy-ingress-controller        2/2     2            2           24h
+haproxy-haproxy-ingress-default-backend   1/1     1            1           24h
+mysql                                     1/1     1            1           4d23h
+```
+
 ###### 创建一个haproxy的转发规则
+
+这里直接转发所有外部流量到后端服务，未做任何分流处理
 
 ```
 kubectl apply -f ingress.yml
 ```
 
-这里直接转发所有外部流量到后端服务，未做任何分流处理，我们希望
+验证一下
+
+```
+[guobin@k8s-master ~]$ kubectl get ingress
+NAME                     CLASS    HOSTS   ADDRESS   PORTS   AGE
+go-web-service-ingress   <none>   *                 80      24h
+
+[guobin@k8s-master ~]$ kubectl get pods --all-namespaces
+NAMESPACE     NAME                                                       READY   STATUS    RESTARTS   AGE
+default       go-web-app-deployment-6fd8d76dff-gdmbn                     1/1     Running   0          4d2h
+default       go-web-app-deployment-6fd8d76dff-ww6g5                     1/1     Running   0          4d2h
+default       haproxy-haproxy-ingress-controller-697c5bc66c-cnk6d        1/1     Running   0          24h
+default       haproxy-haproxy-ingress-controller-697c5bc66c-wlp4j        1/1     Running   0          24h
+default       haproxy-haproxy-ingress-default-backend-5b74fff5f7-gtxrs   1/1     Running   0          24h
+default       mysql-6db984b79d-jq7qq                                     1/1     Running   0          4d23h
+kube-system   coredns-7ff77c879f-gh8gf                                   1/1     Running   2          8d
+kube-system   coredns-7ff77c879f-rjfkk                                   1/1     Running   2          8d
+kube-system   etcd-k8s-master                                            1/1     Running   2          8d
+kube-system   kube-apiserver-k8s-master                                  1/1     Running   2          8d
+kube-system   kube-controller-manager-k8s-master                         1/1     Running   2          8d
+kube-system   kube-flannel-ds-8xdvr                                      1/1     Running   1          8d
+kube-system   kube-flannel-ds-tppxx                                      1/1     Running   2          8d
+kube-system   kube-proxy-szzpx                                           1/1     Running   1          8d
+kube-system   kube-proxy-td56t                                           1/1     Running   2          8d
+kube-system   kube-scheduler-k8s-master                                  1/1     Running   2          8d
+```
 
 #### 优化
 

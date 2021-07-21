@@ -28,7 +28,6 @@ systemctl disable firewalld.service
 ```
 systemctl取代了早期的init.d
 
-
 ###### 禁用SELINUX
 
 临时禁用
