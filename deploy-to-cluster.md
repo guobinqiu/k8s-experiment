@@ -172,10 +172,10 @@ kubectl apply -f ingress.yml
 
 ![slb](./img/slb.png)
 
-访问主页
+访问主页http://121.40.221.176/
 
 ![home](./img/home.png)
 
-访问用户列表页
+访问用户列表页http://121.40.221.176/users
 
 ![users](./img/users.png)
