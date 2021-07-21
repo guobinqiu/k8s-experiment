@@ -64,11 +64,8 @@ kubernates有几种对象：deployment、service、ingress、pv、pvc、secret�
 从qiuguobin的dockerhub上拉取镜像部署到集群
 
 ```
-kubectl apply -f app-deployment.yml
-```
+[guobin@k8s-master ~]$ kubectl apply -f app-deployment.yml
 
-验证一下
-```
 [guobin@k8s-master ~]$ kubectl get deployments
 NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
 go-web-app-deployment                     2/2     2            2           4d2h
@@ -85,11 +82,8 @@ default       go-web-app-deployment-6fd8d76dff-ww6g5                     1/1    
 暴露deployment创建的pods供集群外部访问，暴露端口为：30000（NodePort方式）
 
 ```
-kubectl apply -f app-service.yml
-```
+[guobin@k8s-master ~]$ kubectl apply -f app-service.yml
 
-验证一下
-```
 [guobin@k8s-master ~]$ kubectl get services
 NAME                                      TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                      AGE
 go-web-service                            NodePort    10.1.12.74    <none>        8080:30000/TCP               4d
@@ -101,13 +95,9 @@ go-web-service                            NodePort    10.1.12.74    <none>      
 ###### 创建一个本地磁盘存储
 
 ```
-kubectl apply -f mysql-pv.yml
-kubectl apply -f mysql-pvc.yml
-```
+[guobin@k8s-master ~]$ kubectl apply -f mysql-pv.yml
+[guobin@k8s-master ~]$ kubectl apply -f mysql-pvc.yml
 
-验证一下
-
-```
 [guobin@k8s-master ~]$ kubectl get pv
 NAME              CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                    STORAGECLASS   REASON   AGE
 mysql-pv-volume   1Gi        RWO            Retain           Bound    default/mysql-pv-claim   manual                  4d23h
@@ -129,12 +119,8 @@ pod <--> pvc <--> pv good
 ###### 创建一个环境变量文件
 
 ```
-kubectl apply -f mysql-secret.yml
-```
+[guobin@k8s-master ~]$ kubectl apply -f mysql-secret.yml
 
-验证一下
-
-```
 [guobin@k8s-master ~]$ kubectl get secret
 NAME                                  TYPE                                  DATA   AGE
 mysql-secret                          Opaque                                4      5d22h
@@ -143,12 +129,8 @@ mysql-secret                          Opaque                                4   
 ###### 创建一个deployment
 
 ```
-kubectl apply -f mysql-deployment.yml
-```
+[guobin@k8s-master ~]$ kubectl apply -f mysql-deployment.yml
 
-验证一下
-
-```
 [guobin@k8s-master ~]$ kubectl get deployments
 NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
 go-web-app-deployment                     2/2     2            2           4d2h
@@ -168,12 +150,8 @@ default       mysql-6db984b79d-jq7qq                                     1/1    
 不允许外部访问，只能集群内部之间访问（ClusterIP方式）
 
 ```
-kubectl apply -f mysql-service.yml
-```
+[guobin@k8s-master ~]$ kubectl apply -f mysql-service.yml
 
-验证一下
-
-```
 [guobin@k8s-master ~]$ kubectl get services
 NAME                                      TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                      AGE
 ...
@@ -220,8 +198,6 @@ helm repo add incubator https://charts.helm.sh/incubator
 
 stable库里是已经稳定的，incubator库里是正在孵化的
 
-验证一下是否已加入
-
 ```
 helm repo list
 
@@ -237,8 +213,6 @@ helm install haproxy incubator/haproxy-ingress --create-namespace --namespace de
 ```
 haproxy-ingress-values.yaml这个文件告诉helm，你希望它怎么安装你的haproxy ingress服务。
 这里我们让haproxy暴露一个30001端口供外部internet访问
-
-验证一下
 
 ```
 [guobin@k8s-master ~]$ helm list
@@ -258,12 +232,8 @@ haproxy-haproxy-ingress-default-backend   1/1     1            1           24h
 这里直接转发所有外部流量到后端服务，未做任何分流处理
 
 ```
-kubectl apply -f ingress.yml
-```
+[guobin@k8s-master ~]$ kubectl apply -f ingress.yml
 
-验证一下
-
-```
 [guobin@k8s-master ~]$ kubectl get ingress
 NAME                     CLASS    HOSTS   ADDRESS   PORTS   AGE
 go-web-service-ingress   <none>   *                 80      24h
