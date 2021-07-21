@@ -55,7 +55,7 @@ kubernates有几种对象：deployment、service、ingress、pv、pvc、secret�
 
 #### 部署go web服务
 
-###### 创建一个go web deployment
+###### [创建一个deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
 从qiuguobin的dockerhub上拉取镜像部署到集群
 
@@ -63,7 +63,7 @@ kubernates有几种对象：deployment、service、ingress、pv、pvc、secret�
 kubectl apply -f app-deployment.yml
 ```
 
-###### [创建一个go web service](https://kubernetes.io/docs/concepts/services-networking/service/)
+###### [创建一个service](https://kubernetes.io/docs/concepts/services-networking/service/)
 
 暴露deployment创建的pods供集群外部访问，暴露端口为：30000（NodePort方式）
 
@@ -73,26 +73,35 @@ kubectl apply -f app-service.yml
 
 #### 部署mysql服务
 
-###### 创建一个mysql本地磁盘卷
+###### 创建一个本地磁盘存储
 
 ```
 kubectl apply -f mysql-pv.yml
 kubectl apply -f mysql-pvc.yml
 ```
 
-###### 创建一个mysql数据库环境变量文件
+为什么有了pv，还要pvc？
+
+```
+pod <--> pv          bad
+pod <--> pvc <--> pv good
+```
+从设计模式上来说，pod不直接绑定pv，而是通过绑定pvc，再由pvc去绑定pv，其实是起到了pod和pv之间解耦的作用，
+类似于两张多对多的表会通过加中间表去做关联一样的道理
+
+###### 创建一个环境变量文件
 
 ```
 kubectl apply -f mysql-secret.yml
 ```
 
-###### 创建一个mysql deployment
+###### 创建一个deployment
 
 ```
 kubectl apply -f mysql-deployment.yml
 ```
 
-###### [创建一个mysql service](https://kubernetes.io/docs/concepts/services-networking/service/)
+###### 创建一个service
 
 不允许外部访问，只能集群内部之间访问（ClusterIP方式）
 
@@ -100,7 +109,7 @@ kubectl apply -f mysql-deployment.yml
 kubectl apply -f mysql-service.yml
 ```
 
-###### mysql的彻底删除
+###### 彻底删除
 
 除了删除持久化卷
 

@@ -8,4 +8,4 @@ spec:
     targetPort: 3306
   selector:
     app: mysql
-  clusterIP: None
+  clusterIP: None #既不能通过internet访问，也不能在集群外访问，限制只能在集群内被访问

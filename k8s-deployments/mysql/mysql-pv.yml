@@ -1,5 +1,5 @@
 apiVersion: v1
-kind: PersistentVolume
+kind: PersistentVolume #创建一个持久化存储
 metadata:
   name: mysql-pv-volume
 spec:
@@ -7,7 +7,9 @@ spec:
   capacity:
     storage: 1Gi
   accessModes:
-    - ReadWriteOnce
-  hostPath:
+  - ReadWriteOnce
+  #https://kubernetes.io/docs/concepts/storage/persistent-volumes/#types-of-persistent-volumes
+  hostPath: #hostPath属于本地存储，相对的还有云存储，生产环境不建议用hostPath
     path: "/mnt/data"
-  persistentVolumeReclaimPolicy: Retain
+  #https://kubernetes.io/docs/tasks/administer-cluster/change-pv-reclaim-policy/#why-change-reclaim-policy-of-a-persistentvolume
+  persistentVolumeReclaimPolicy: Retain #当pvc被删除时保留pv

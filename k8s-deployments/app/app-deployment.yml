@@ -4,18 +4,18 @@ kind: Deployment
 metadata:
   name: go-web-app-deployment
 spec:
-  replicas: 2
+  replicas: 2 #任何时候保证有2个pods正在运行，留个作业：如果两台服务器运行3个pods，k8s会如何分配？
   selector:
     matchLabels:
-      name: go-web-app
-  template:
+      name: go-web-app #一定要和下面的.spec.template.metadata.labels.name保持一致
+  template: #定义pods
     metadata:
       labels:
         name: go-web-app
     spec:
       containers:
       - name: application
-        image: qiuguobin/go-web-app:latest
-        imagePullPolicy: Always
+        image: qiuguobin/go-web-app:latest #dockerhub上的镜像
+        imagePullPolicy: Always #镜像版本一有更新就拉最新的，生产环境建议设置为IfNotPresent
         ports:
-          - containerPort: 3001
+        - containerPort: 3001 #容器暴露的端口

@@ -4,13 +4,12 @@ kind: Service
 metadata:
   name: go-web-service
 spec:
-  type: NodePort
+  type: NodePort #https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   #type: ClusterIP
   ports:
   - name: http
-    port: 8080
-    targetPort: 3001
-    nodePort: 30000
+    port: 8080 #service的端口
+    targetPort: 3001 #pod的端口
+    nodePort: 30000 #暴露给internet访问的端口
   selector:
     name: go-web-app
-

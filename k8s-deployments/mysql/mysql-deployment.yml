@@ -7,24 +7,24 @@ spec:
     matchLabels:
       app: mysql
   strategy:
-    type: Recreate
+    type: Recreate #失败后自动重建
   template:
     metadata:
       labels:
         app: mysql
     spec:
       containers:
-      - image: mysql:5.7
+      - image: mysql:5.7 #dockerhub上的镜像
         name: mysql
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: IfNotPresent #不存在要去拉，存在就不拉了
         envFrom:
         - secretRef:
-            name: mysql-secret
+            name: mysql-secret #使用环境变量配置文件
         ports:
-        - containerPort: 3306
+        - containerPort: 3306 #容器暴露的端口
           name: mysql
         volumeMounts:
-        - name: mysql-persistent-storage
+        - name: mysql-persistent-storage #要和下面的volumes.name保持一致
           mountPath: /var/lib/mysql
       volumes:
       - name: mysql-persistent-storage
