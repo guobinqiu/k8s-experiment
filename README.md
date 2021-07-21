@@ -1,12 +1,15 @@
-基于Kubernates发布一个go web应用
+Publish a go web application based on kubernates
 ---
 
-要用kubernates发布一个go web应用，主要经历3大过程
+[简体中文](README_CN.md)
 
-1. [搭建kubernates集群](install-cluster.md)有多种方式
-   - 购买现成的各家云服务商已经整合好的集群服务
-   - 在自己的电脑上搭建单机集群，推荐使用工具[minikube](https://minikube.sigs.k8s.io/docs/)+[virtualbox](https://www.virtualbox.org/)
-   - 自己购买云服务器来搭建集群，推荐使用[kubeadmin](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)工具（本案例使用该方式）
-   - 在本地机房搭建集群，推荐使用[kubeadmin](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)+[metallb](https://metallb.universe.tf/)
-2. [把你本地的go web应用制成容器镜像](dockerize-go-app.md)
-3. [把容器镜像跑在kubernates集群里](deploy-to-cluster.md)
+To publish a go web application with kubernates, there are mainly three major processes
+
+1. [Build kubernates cluster](install-cluster.md) There are many ways
+    - Purchase ready-made cluster services that have been integrated by various cloud service providers
+    - To build a stand-alone cluster on your own computer, it is recommended to use the tool [minikube](https://minikube.sigs.k8s.io/docs/)+[virtualbox](https://www.virtualbox.org/)
+    - Purchase a cloud server by yourself to build a cluster. It is recommended to use the [kubeadmin](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/) tool (this method is used in this case)
+    - To build a cluster in the local computer room, it is recommended to use [kubeadmin](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)+[metallb](https://metallb.universe.tf/)
+
+2. [Make your local go web application into a container image](dockerize-go-app.md)
+3. [Run the container image in the kubernates cluster](deploy-to-cluster.md)
