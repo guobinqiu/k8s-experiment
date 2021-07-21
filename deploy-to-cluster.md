@@ -33,7 +33,11 @@ Guobins-MBP:k8s-deployments guobin$ tree
 
 - app: go web服务的配置文件
 - baremetal: 我实验用的，我们这里不会用到，这在本地机房部署k8s集群才会用
-- haproxy: 灰度发布或者想省负载均衡器时用，我们这里用了，但只占个位，做个简单的转发，方便将来扩展
+- haproxy: 我们这里只做个简单的转发，方便将来扩展
+  - 灰度发布
+  - 蓝绿发布
+  - AB Testing
+  - ...
 - mysql:我们的web服务依赖的数据库服务
 - net: 集群网络配置
 
@@ -73,17 +77,7 @@ go-web-app-deployment                     2/2     2            2           4d2h
 NAMESPACE     NAME                                                       READY   STATUS    RESTARTS   AGE
 default       go-web-app-deployment-6fd8d76dff-gdmbn                     1/1     Running   0          4d2h
 default       go-web-app-deployment-6fd8d76dff-ww6g5                     1/1     Running   0          4d2h
-default       mysql-6db984b79d-jq7qq                                     1/1     Running   0          4d23h
-kube-system   coredns-7ff77c879f-gh8gf                                   1/1     Running   2          8d
-kube-system   coredns-7ff77c879f-rjfkk                                   1/1     Running   2          8d
-kube-system   etcd-k8s-master                                            1/1     Running   2          8d
-kube-system   kube-apiserver-k8s-master                                  1/1     Running   2          8d
-kube-system   kube-controller-manager-k8s-master                         1/1     Running   2          8d
-kube-system   kube-flannel-ds-8xdvr                                      1/1     Running   1          8d
-kube-system   kube-flannel-ds-tppxx                                      1/1     Running   2          8d
-kube-system   kube-proxy-szzpx                                           1/1     Running   1          8d
-kube-system   kube-proxy-td56t                                           1/1     Running   2          8d
-kube-system   kube-scheduler-k8s-master                                  1/1     Running   2          8d
+...
 ```
 
 ###### [创建一个service](https://kubernetes.io/docs/concepts/services-networking/service/)
@@ -99,7 +93,7 @@ kubectl apply -f app-service.yml
 [guobin@k8s-master ~]$ kubectl get services
 NAME                                      TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                      AGE
 go-web-service                            NodePort    10.1.12.74    <none>        8080:30000/TCP               4d
-kubernetes                                ClusterIP   10.1.0.1      <none>        443/TCP                      8d
+...
 ```
 
 #### 部署mysql服务
@@ -159,22 +153,14 @@ kubectl apply -f mysql-deployment.yml
 NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
 go-web-app-deployment                     2/2     2            2           4d2h
 mysql                                     1/1     1            1           4d23h
+...
 
 [guobin@k8s-master ~]$ kubectl get pods --all-namespaces
 NAMESPACE     NAME                                                       READY   STATUS    RESTARTS   AGE
 default       go-web-app-deployment-6fd8d76dff-gdmbn                     1/1     Running   0          4d2h
 default       go-web-app-deployment-6fd8d76dff-ww6g5                     1/1     Running   0          4d2h
 default       mysql-6db984b79d-jq7qq                                     1/1     Running   0          4d23h
-kube-system   coredns-7ff77c879f-gh8gf                                   1/1     Running   2          8d
-kube-system   coredns-7ff77c879f-rjfkk                                   1/1     Running   2          8d
-kube-system   etcd-k8s-master                                            1/1     Running   2          8d
-kube-system   kube-apiserver-k8s-master                                  1/1     Running   2          8d
-kube-system   kube-controller-manager-k8s-master                         1/1     Running   2          8d
-kube-system   kube-flannel-ds-8xdvr                                      1/1     Running   1          8d
-kube-system   kube-flannel-ds-tppxx                                      1/1     Running   2          8d
-kube-system   kube-proxy-szzpx                                           1/1     Running   1          8d
-kube-system   kube-proxy-td56t                                           1/1     Running   2          8d
-kube-system   kube-scheduler-k8s-master                                  1/1     Running   2          8d
+...
 ```
 
 ###### 创建一个service
@@ -190,9 +176,9 @@ kubectl apply -f mysql-service.yml
 ```
 [guobin@k8s-master ~]$ kubectl get services
 NAME                                      TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                      AGE
-go-web-service                            NodePort    10.1.12.74    <none>        8080:30000/TCP               4d
-kubernetes                                ClusterIP   10.1.0.1      <none>        443/TCP                      8d
+...
 mysql                                     ClusterIP   None          <none>        3306/TCP                     4d2h
+...
 ```
 
 ###### 彻底删除
@@ -231,6 +217,7 @@ $ ./get_helm.sh
 helm repo add stable https://charts.helm.sh/stable
 helm repo add incubator https://charts.helm.sh/incubator
 ```
+
 stable库里是已经稳定的，incubator库里是正在孵化的
 
 验证一下是否已加入
@@ -260,10 +247,10 @@ haproxy default         1               2021-07-19 16:59:14.961230318 +0800 CST 
 
 [guobin@k8s-master ~]$ kubectl get deployments
 NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
-go-web-app-deployment                     2/2     2            2           4d2h
+...
 haproxy-haproxy-ingress-controller        2/2     2            2           24h
 haproxy-haproxy-ingress-default-backend   1/1     1            1           24h
-mysql                                     1/1     1            1           4d23h
+...
 ```
 
 ###### 创建一个haproxy的转发规则
@@ -283,22 +270,11 @@ go-web-service-ingress   <none>   *                 80      24h
 
 [guobin@k8s-master ~]$ kubectl get pods --all-namespaces
 NAMESPACE     NAME                                                       READY   STATUS    RESTARTS   AGE
-default       go-web-app-deployment-6fd8d76dff-gdmbn                     1/1     Running   0          4d2h
-default       go-web-app-deployment-6fd8d76dff-ww6g5                     1/1     Running   0          4d2h
+...
 default       haproxy-haproxy-ingress-controller-697c5bc66c-cnk6d        1/1     Running   0          24h
 default       haproxy-haproxy-ingress-controller-697c5bc66c-wlp4j        1/1     Running   0          24h
 default       haproxy-haproxy-ingress-default-backend-5b74fff5f7-gtxrs   1/1     Running   0          24h
-default       mysql-6db984b79d-jq7qq                                     1/1     Running   0          4d23h
-kube-system   coredns-7ff77c879f-gh8gf                                   1/1     Running   2          8d
-kube-system   coredns-7ff77c879f-rjfkk                                   1/1     Running   2          8d
-kube-system   etcd-k8s-master                                            1/1     Running   2          8d
-kube-system   kube-apiserver-k8s-master                                  1/1     Running   2          8d
-kube-system   kube-controller-manager-k8s-master                         1/1     Running   2          8d
-kube-system   kube-flannel-ds-8xdvr                                      1/1     Running   1          8d
-kube-system   kube-flannel-ds-tppxx                                      1/1     Running   2          8d
-kube-system   kube-proxy-szzpx                                           1/1     Running   1          8d
-kube-system   kube-proxy-td56t                                           1/1     Running   2          8d
-kube-system   kube-scheduler-k8s-master                                  1/1     Running   2          8d
+...
 ```
 
 #### 优化
