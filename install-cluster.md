@@ -5,7 +5,7 @@
 > https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/
 
 - control-plane：相当于master节点
-- workder：相当于slave节点，现在不能乱喊了
+- worker：相当于slave节点，现在不能乱喊了
 - etcd：持久化集群状态
 
 本案例考虑到个人学习成本问题，只从阿里云买了两台ec2云服务器，一台作为worker节点，另一台即作master又作worker
