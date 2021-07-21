@@ -43,7 +43,7 @@ Guobins-MBP:k8s-deployments guobin$ tree
 
 kubernates有几种对象：deployment、service、ingress、pv、pvc、secret等等，对应到我们这里的配置文件
 
-对象：
+k8s对象：
 - deployment：创建一组[pods](https://kubernetes.io/docs/concepts/workloads/pods/#what-is-a-pod)
 - [service](https://kubernetes.io/docs/concepts/services-networking/service/)：暴露一组pods供外部访问
   - ClusterIP：internet不能访问，只能进到安装k8s的宿主机里去访问
