@@ -44,13 +44,9 @@ Guobins-MBP:k8s-deployments guobin$ tree
 kubernates有几种对象：deployment、service、ingress、pv、pvc、secret等等，对应到我们这里的配置文件
 
 k8s对象：
-- deployment：创建一组[pods](https://kubernetes.io/docs/concepts/workloads/pods/#what-is-a-pod)
-- [service](https://kubernetes.io/docs/concepts/services-networking/service/)：暴露一组pods供外部访问
-  - ClusterIP：internet不能访问，只能进到安装k8s的宿主机里去访问
-  - NodePort：internet能访问，通过<NodeIP>:<NodePort>访问，本案例使用的此种方式
-  - LoadBalancer: internet能访问的前提是启用云服务商提供的负载均衡服务
-  - ExtenalName：没用过
-- [ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)：暴露一组services供外部访问
+- [deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)：创建一组[pod](https://kubernetes.io/docs/concepts/workloads/pods/#what-is-a-pod)
+- [service](https://kubernetes.io/docs/concepts/services-networking/service/)：暴露一组pod供外部访问
+- [ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)：暴露一组service供外部访问
 - [pv](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)：数据持久化卷（声明）
 - [pvc](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)：数据持久化卷（使用）
 - [secret](https://kubernetes.io/docs/concepts/configuration/secret/)：类似环境变量
@@ -59,7 +55,7 @@ k8s对象：
 
 #### 部署go web服务
 
-###### [创建一个deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+###### 创建一个deployment
 
 从qiuguobin的dockerhub上拉取镜像部署到集群
 
@@ -77,9 +73,15 @@ default       go-web-app-deployment-6fd8d76dff-ww6g5                     1/1    
 ...
 ```
 
-###### [创建一个service](https://kubernetes.io/docs/concepts/services-networking/service/)
+###### 创建一个service
 
 暴露deployment创建的pods供集群外部访问，暴露端口为：30000（NodePort方式）
+
+[service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)
+- ClusterIP：internet不能访问，只能进到安装k8s的宿主机里去访问
+- NodePort：internet能访问，通过<NodeIP>:<NodePort>访问，本案例使用的此种方式
+- LoadBalancer: internet能访问的前提是启用云服务商提供的负载均衡服务
+- ExtenalName：没用过
 
 ```
 [guobin@k8s-master ~]$ kubectl apply -f app-service.yml
@@ -174,7 +176,7 @@ kubectl delete pv mysql-pv-volume
 rm -rf /mnt/data
 ```
 
-#### [部署haproxy ingress服务](https://github.com/haproxy-ingress/charts)
+#### 部署haproxy ingress服务
 
 haproxy的配置文件有两种创建方式：deployment和[helm](https://helm.sh/docs/intro/install/)，我们这里采用helm方式来创建，这比自己写deployment省心很多哦
 
@@ -206,7 +208,9 @@ stable   	https://charts.helm.sh/stable
 incubator	https://charts.helm.sh/incubator
 ```
 
-###### 使用helm安装haproxy ingress服务
+###### helm安装haproxy ingress
+
+> https://github.com/haproxy-ingress/charts
 
 ```
 helm install haproxy incubator/haproxy-ingress --create-namespace --namespace default -f haproxy-ingress-values.yaml
@@ -227,7 +231,7 @@ haproxy-haproxy-ingress-default-backend   1/1     1            1           24h
 ...
 ```
 
-###### 创建一个haproxy的转发规则
+###### 创建一个转发规则
 
 这里直接转发所有外部流量到后端服务，未做任何分流处理
 

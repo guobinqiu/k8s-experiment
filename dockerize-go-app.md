@@ -145,3 +145,4 @@ docker push guobinqiu/go-web-app
 
 补充：
 这里的镜像是public的，还需要考虑如果把访问权限设置成[private](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)后对k8s容器拉取时候的差异。另外，如果项目复杂的话，可以考虑用jenkins来一键构建并上传镜像
+****
