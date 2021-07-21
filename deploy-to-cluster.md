@@ -49,7 +49,7 @@ Guobins-MBP:k8s-deployments guobin$ tree
 - [pv](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
 - [pvc](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
 - [secret](https://kubernetes.io/docs/concepts/configuration/secret/)
-- others
+- ...
 
 以下所有的发布都到默认的namespace：`default`，namespace可以用来区分发布环境，如`namespace=staging, namespace=dev`等
 
