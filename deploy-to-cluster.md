@@ -79,7 +79,7 @@ default       go-web-app-deployment-6fd8d76dff-ww6g5                     1/1    
 
 [service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)
 - ClusterIP：internet不能访问，只能进到安装k8s的宿主机里去访问
-- NodePort：internet能访问，通过`<NodeIP>:<NodePort>`访问，本案例使用的此种方式
+- NodePort：internet能访问，通过`NodeIP:NodePort`访问，本案例使用的此种方式
 - LoadBalancer: internet能访问的前提是启用云服务商提供的负载均衡服务
 - ExtenalName：没用过
 
