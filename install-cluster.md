@@ -1,4 +1,4 @@
-### 1. 搭建kubernates集群
+### 搭建kubernates集群
 
 生产环境考虑到高可用性，一般至少需要9台服务器，3台跑`control-plane`，3台跑`worker`,3台跑`etcd`
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/
