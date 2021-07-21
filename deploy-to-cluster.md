@@ -1,6 +1,10 @@
 ### 把容器镜像跑在kubernates集群里
 
-先看一下发布所使用的配置文件的目录结构
+###### 架构图
+
+![arch](./img/arch.png)
+
+###### 发布所使用的配置文件的目录结构
 
 ```
 Guobins-MBP:k8s-deployments guobin$ tree
@@ -166,16 +170,12 @@ kubectl apply -f ingress.yml
 的端口规定要从30000开始，为了隐藏NodePort暴露的端口，我申请了一个负载均衡SLB服务，IP为`121.40.221.176`，
 这样所有对80端口的访问都可以被映射到30001端口。
 
-在浏览器中当访问`http://121.40.221.176/`时，会输出
-```
-My Awesome Go App!!!
-```
+![slb](./img/slb.png)
 
-当访问`http://121.40.221.176/users`时，会输出
-```
-name=guobin, age=18
-name=jack, age=100
-```
-这个数据是在mysql容器里手动写入的，由于是实验环境，我的mysql配置成了只能在集群内部访问，
-你也可以把mysql服务配置成NodePort方式，这样你就可以在外面直接连接到容器内部的mysql去操作了。
+访问主页
 
+![home](./img/home.png)
+
+访问用户列表页
+
+![users](./img/users.png)
