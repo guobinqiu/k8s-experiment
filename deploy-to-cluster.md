@@ -36,20 +36,20 @@ Guobins-MBP:k8s-deployments guobin$ tree
 - haproxy: 我们这里只做个简单的转发，方便将来扩展
   - 灰度发布
   - 蓝绿发布
-  - AB Testing
+  - A/B Testing
   - ...
 - mysql:我们的web服务依赖的数据库服务
 - net: 集群网络配置
 
-kubernates有几种对象：deployment、service、ingress、pv、pvc、secret等等，对应到我们这里的配置文件
+从配置文件的命名上可以看出kubernates的几种对象，这里只列举我们项目用到的：
 
-k8s对象：
-- [deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)：创建一组[pod](https://kubernetes.io/docs/concepts/workloads/pods/#what-is-a-pod)
-- [service](https://kubernetes.io/docs/concepts/services-networking/service/)：暴露一组pod供外部访问
-- [ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)：暴露一组service供外部访问
-- [pv](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)：数据持久化卷（声明）
-- [pvc](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)：数据持久化卷（使用）
-- [secret](https://kubernetes.io/docs/concepts/configuration/secret/)：类似环境变量
+- [deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+- [service](https://kubernetes.io/docs/concepts/services-networking/service/)
+- [ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)
+- [pv](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
+- [pvc](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
+- [secret](https://kubernetes.io/docs/concepts/configuration/secret/)
+- others
 
 以下所有的发布都到默认的namespace：`default`，namespace可以用来区分发布环境，如`namespace=staging, namespace=dev`等
 
