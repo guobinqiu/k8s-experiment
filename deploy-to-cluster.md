@@ -81,7 +81,6 @@ default       go-web-app-deployment-6fd8d76dff-ww6g5                     1/1    
 - ClusterIP：internet不能访问，只能进到安装k8s的宿主机里去访问
 - NodePort：internet能访问，通过`NodeIP:NodePort`访问
 - LoadBalancer: internet能访问的前提是启用云服务商提供的负载均衡服务
-- ExtenalName：?
 
 ```
 [guobin@k8s-master ~]$ kubectl apply -f app-service.yml
