@@ -196,7 +196,7 @@ kubectl delete pvc mysql-pv-claim
 kubectl delete pv mysql-pv-volume
 ```
 
-还要进到你的服务器里去删除其挂载目录
+删除hostPath目录，注意只会挂载到其中某一台节点上
 
 ```
 rm -rf /mnt/data

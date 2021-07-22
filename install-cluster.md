@@ -169,13 +169,23 @@ su - guobin
 
 ###### 配置kubectl
 
+master节点
+
 ```
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-这样普通用户就可以使用kubectl命令了
+worker节点
+
+```
+mkdir -p $HOME/.kube
+sudo scp guobin@47.96.172.142:~/.kube/config $HOME/.kube #把config文件从master节点复制到本地
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+这样普通用户就可以在任意节点上使用kubectl命令了
 
 #### [安装集群网络](https://kubernetes.io/docs/concepts/cluster-administration/networking/)
 
