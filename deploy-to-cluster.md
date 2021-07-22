@@ -23,12 +23,11 @@ Guobins-MBP:k8s-deployments guobin$ tree
 │   ├── mysql-pv.yml
 │   ├── mysql-pvc.yml
 │   ├── mysql-secret.yml
-│   ├── mysql-service.yml
-│   └── mysql-service.yml.bak
+│   └── mysql-service.yml
 └── net
     └── kube-flannel.yml
 
-5 directories, 13 files
+5 directories, 12 files
 ```
 
 - app: go web服务的配置文件
