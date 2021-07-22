@@ -32,7 +32,7 @@ Guobins-MBP:k8s-deployments guobin$ tree
 
 - app: go web服务的配置文件
 - baremetal: 我实验用的，我们这里不会用到，这在本地机房部署k8s集群才会用
-- haproxy: 我们这里只做个简单的转发，方便将来扩展
+- haproxy: 我们这里只做简单的转发，方便将来扩展成其他的发布模式，包括
   - 灰度发布
   - 蓝绿发布
   - A/B Testing
