@@ -7,7 +7,7 @@ spec:
   capacity:
     storage: 1Gi
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteOnce #ReadWriteOnce可以被一个node读写，ReadWriteMany可以被多个node读写，ReadOnlyMany可以被多个node读取
   #https://kubernetes.io/docs/concepts/storage/persistent-volumes/#types-of-persistent-volumes
   hostPath: #hostPath属于本地存储，相对的还有云存储，生产环境不建议用hostPath
     path: "/mnt/data"

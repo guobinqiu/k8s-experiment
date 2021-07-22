@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim #创建一个持久化存储的使用申请
 metadata:
   name: mysql-pv-claim
 spec:
-  storageClassName: manual
+  storageClassName: manual #绑定pv，要pv的.spec.storageClassName保持一致
   accessModes:
   - ReadWriteOnce
   resources:

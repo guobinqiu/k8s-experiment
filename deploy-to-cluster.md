@@ -148,7 +148,7 @@ default       mysql-6db984b79d-jq7qq                                     1/1    
 
 ###### 创建一个service
 
-不允许外部访问，只能集群内部之间访问（ClusterIP方式）
+不允许外部访问，只能集群内部之间访问（ClusterIP类型）
 
 ```
 [guobin@k8s-master ~]$ kubectl apply -f mysql-service.yml
@@ -160,9 +160,36 @@ mysql                                     ClusterIP   None          <none>      
 ...
 ```
 
-###### 彻底删除
+###### 构建两条用户数据
 
-除了删除持久化卷
+```
+kubectl exec -it mysql-6db984b79d-jq7qq /bin/sh #进到容器内
+
+mysql -uguobin -p222222
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| test               |
++--------------------+
+2 rows in set (0.00 sec)
+
+mysql> use test;
+Database changed
+
+mysql> create table user(name varchar(10), age int);
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> insert into user values('guobin',18),('jack',100);
+Query OK, 2 rows affected (0.02 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+```
+
+###### 删除mysql数据
+
+除了删除持久化存储
 
 ```
 kubectl delete pvc mysql-pv-claim

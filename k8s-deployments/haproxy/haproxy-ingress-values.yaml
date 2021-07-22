@@ -3,7 +3,7 @@ controller:
   hostNetwork: true
   #  dnsPolicy: ClusterFirstWithHostNet
   #  Kind: Deployment
-  replicaCount: 2
+  replicaCount: 1
   service:
     externalTrafficPolicy: Local
     type: NodePort

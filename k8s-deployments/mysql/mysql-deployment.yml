@@ -8,6 +8,7 @@ spec:
       app: mysql
   strategy:
     type: Recreate #失败后自动重建
+  replicas: 1 #mysql不能水平扩容，只能配一个pod
   template:
     metadata:
       labels:

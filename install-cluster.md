@@ -1,14 +1,13 @@
 ### 搭建kubernates集群
 
-生产环境考虑到高可用性，一般至少需要9台服务器，3台跑`control-plane`，3台跑`worker`,3台跑`etcd`
-
-> https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/
-
+生产环境考虑到高可用性，一般至少需要9台服务器，3台跑`control-plane`，3台跑`worker`，3台跑`etcd`
 - control-plane：相当于master节点
 - worker：相当于slave节点，现在不能乱喊了
 - etcd：持久化集群状态
 
-本案例考虑到个人学习成本问题，只从阿里云买了两台ec2云服务器，一台作为worker节点，另一台即作master又作worker
+> https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/
+
+本案例考虑到个人学习成本问题，只从阿里云买了两台ec2云服务器，一台作为worker节点，另一台既作master又作worker
 
 #### 系统环境
 
@@ -20,6 +19,8 @@ CentOS 7.9 64位|172.19.44.93|47.98.221.22|k8s-worknode|1核 2GiB|worker
 注意：官方推荐CPU至少2核，内存2G，由于我CPU是1核，在安装时需要忽略配置检查`kubeadm init ... --ignore-preflight-errors=NumCPU`
 
 #### 准备工作
+
+所有节点都要准备
 
 ###### 关闭防火墙
 
@@ -81,7 +82,6 @@ yum install -y docker
 #### [安装kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl)
 
 安装kubeadm，kubelet，kubectl，所有节点都要装
-
 - kubeadm: 安装k8s集群的工具
 - kubelet: 管理着容器和pod的生命周期
 - kubectl: k8s集群管理的客户端工具
@@ -125,13 +125,11 @@ kubeadm init \
 --service-cidr=10.1.0.0/16 \
 --pod-network-cidr=10.244.0.0/16
 ```
-
 - kubernetes-version: 用于指定k8s版本
 - apiserver-advertise-address: 用于指定kube-apiserver监听的ip地址,就是master本机IP地址。
 - pod-network-cidr: 用于指定Pod的网络范围； 10.244.0.0/16
 - service-cidr: 用于指定svc的网络范围；
 - image-repository: 指定阿里云镜像仓库地址。由于kubeadm默认从官网k8s.grc.io下载所需镜像，国内无法访问，因此需要通过–image-repository指定阿里云镜像仓库地址
-
 
 集群初始化成功后返回如下信息：
 
@@ -156,22 +154,28 @@ as root:
 
 把`kubeadm join <control-plane-host>:<control-plane-port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>`这行保存下来，将来要在worker节点上执行
 
+###### 新增普通用户
 
-###### 配置kubectl工具
+为了能够在任何一台机器上都能管理k8s集群，需要在服务器上新增一个普通用户，并赋予sudo权限
 
-为了能够在任何一台机器上都能管理k8s集群，需要在服务器上新增一个普通用户，然后执行上面的命令。
-现在创建一个叫guobin的普通用户并赋予sudo权限
 ```
 adduser guobin
 passwd guobin
 usermod -aG wheel guobin
 su - guobin
+```
 
+把guobin用户添加到wheel组就会自动拥有sudo权限，而不需要修改/etc/sudoers文件，这是一个小技巧
+
+###### 配置kubectl
+
+```
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
-把guobin用户添加到wheel组就会自动拥有sudo权限，而不需要修改/etc/sudoers文件，这是一个小技巧。
+
+这样普通用户就可以使用kubectl命令了
 
 #### [安装集群网络](https://kubernetes.io/docs/concepts/cluster-administration/networking/)
 
@@ -183,6 +187,7 @@ kubernates的CNI网络插件有很多，这里我们选择安装flannel，因为
 如果yml中的`"Network": "10.244.0.0/16"`和`kubeadm init xxx --pod-network-cidr`不一样，就需要修改成一样的。不然可能会使得Node间Cluster IP不通。由于我上面的kubeadm init xxx --pod-network-cidr就是10.244.0.0/16。所以此yaml文件就不需要更改了。
 
 安装网络
+
 ```
 kubectl apply -f kube-flannel.yml
 ```
@@ -267,4 +272,3 @@ flannel.1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1450
 多出了一块flannel.1网卡，它是用来做集群内部网络通信的
 
 这样kubernates集群搭建就ok了
-
