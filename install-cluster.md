@@ -75,7 +75,7 @@ swapoff -a
 /dev/mapper/cl-swap     swap                    swap    defaults        0 0
 ```
 
-#### 安装docker
+#### docker安装
 
 ```
 yum install -y docker
@@ -180,7 +180,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 这样普通用户就可以在任意节点上使用kubectl命令了
 
-#### [安装集群网络](https://kubernetes.io/docs/concepts/cluster-administration/networking/)
+#### [集群网络安装](https://kubernetes.io/docs/concepts/cluster-administration/networking/)
 
 kubernates的CNI网络插件有很多，这里我们选择安装flannel，因为它的通用性比较好，如果你的k8s是搭建在自建机房的裸机上的话，有些网络插件会有不兼容的情况。如果你使用的是云服务商提供的k8s集群那他们一般都会有自己的CNI。
 
@@ -198,7 +198,7 @@ wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-
 kubectl apply -f kube-flannel.yml
 ```
 
-### Worker加入集群
+### Worker节点安装
 
 #### 修改主机名
 
