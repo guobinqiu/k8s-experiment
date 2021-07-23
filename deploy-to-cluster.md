@@ -1,8 +1,12 @@
 ### 把容器镜像跑在kubernates集群里
 
+以下所有的发布都到默认的namespace：`default`，namespace可以用来区分发布环境，如`namespace=staging, namespace=dev`等
+
 #### 部署go web服务
 
-以下所有的发布都到默认的namespace：`default`，namespace可以用来区分发布环境，如`namespace=staging, namespace=dev`等
+```
+cd ./k8s-deployments/app
+```
 
 ###### 创建一个deployment
 
@@ -41,6 +45,10 @@ go-web-service                            NodePort    10.1.12.74    <none>      
 ```
 
 #### 部署mysql服务
+
+```
+cd ./k8s-deployments/mysql
+```
 
 ###### 创建一个本地磁盘存储
 
@@ -152,6 +160,10 @@ rm -rf /mnt/data
 ```
 
 #### 部署haproxy ingress服务
+
+```
+cd ./k8s-deployments/haproxy
+```
 
 haproxy的配置文件有两种创建方式：deployment和[helm](https://helm.sh/docs/intro/install/)，我们这里采用helm方式来创建，这比自己写deployment省心很多哦
 

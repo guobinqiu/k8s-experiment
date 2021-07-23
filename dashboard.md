@@ -1,6 +1,10 @@
 ### [安装监控](https://github.com/kubernetes/dashboard)
 
-###### 安装监控
+```
+cd ./k8s-deployments/dashboard
+```
+
+###### 准备工作
 
 下载安装文件
 
@@ -35,7 +39,7 @@ spec:
   type: NodePort
 ```
 
-安装监控服务
+###### 安装监控服务
 
 ```
 kubectl apply -f kubernetes-dashboard-deployment.yml
