@@ -12,3 +12,4 @@
    - 在本地机房搭建集群，推荐使用[kubeadmin](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)+[metallb](https://metallb.universe.tf/)
 2. [把你本地的go web应用制成容器镜像](dockerize-go-app.md)
 3. [把容器镜像跑在kubernates集群里](deploy-to-cluster.md)
+4. [安装监控](dashboard.md)
