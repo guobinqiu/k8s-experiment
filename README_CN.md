@@ -58,8 +58,6 @@ Guobins-MBP:k8s-deployments guobin$ tree
 - [secret](https://kubernetes.io/docs/concepts/configuration/secret/)
 - ...
 
-先搞清楚这些概念
-
 ### 要用kubernates发布一个go web应用，主要经历3大过程
 
 1. [搭建kubernates集群](install-cluster.md)有多种方式
