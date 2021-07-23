@@ -1,15 +1,20 @@
-### 搭建kubernates集群
+# 搭建kubernates集群
+
+## 生产环境
+
+> https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/
 
 生产环境考虑到高可用性，一般至少需要9台服务器，3台跑`control-plane`，3台跑`worker`，3台跑`etcd`
+
 - control-plane：相当于master节点
 - worker：相当于slave节点，现在不能乱喊了
 - etcd：持久化集群状态
 
-> https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/
+## 测试环境
 
 本案例考虑到个人学习成本问题，只从阿里云买了两台ec2云服务器，一台作为worker节点，另一台既作master又作worker
 
-#### 系统环境
+### 系统环境
 
 系统|内网IP|公网IP|主机名|主机配置|节点类型
 ---|---|---|---|---|---
@@ -18,11 +23,9 @@ CentOS 7.9 64位|172.19.44.93|47.98.221.22|k8s-worknode|1核 2GiB|worker
 
 注意：官方推荐CPU至少2核，内存2G，由于我CPU是1核，在安装时需要忽略配置检查`kubeadm init ... --ignore-preflight-errors=NumCPU`
 
-#### 准备工作
+### 所有节点安装
 
-所有节点都要准备
-
-###### 关闭防火墙
+#### 关闭防火墙
 
 ```
 systemctl stop firewalld.service
@@ -30,7 +33,7 @@ systemctl disable firewalld.service
 ```
 systemctl取代了早期的init.d
 
-###### 禁用SELINUX
+#### 禁用SELINUX
 
 临时禁用
 ```
@@ -43,7 +46,8 @@ vim /etc/selinux/config
 SELINUX=disabled
 ```
 
-###### 修改k8s.conf文件
+#### 修改k8s.conf文件
+
 ```
 cat <<-EOF > /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
@@ -54,7 +58,7 @@ sysctl --system
 ```
 把EOF之间的内容输出到/etc/sysctl.d/k8s.conf文件
 
-###### 关闭swap
+#### 关闭swap
 
 临时关闭
 ```
@@ -73,25 +77,32 @@ swapoff -a
 
 #### 安装docker
 
-所有节点都要装
-
 ```
 yum install -y docker
 ```
 
-#### [安装kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl)
+#### [安装kubeadm、kubelet、kubectl](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl)
 
-安装kubeadm，kubelet，kubectl，所有节点都要装
 - kubeadm: 安装k8s集群的工具
 - kubelet: 管理着容器和pod的生命周期
 - kubectl: k8s集群管理的客户端工具
 
-###### 修改主机名
+```
+sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+sudo systemctl enable --now kubelet
+```
+
+### Master节点安装
+
+> https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/
+
+#### 修改主机名
+
 ```
 hostnamectl set-hostname k8s-masternode
 ```
 
-###### 修改yum安装源
+#### 修改yum安装源
 
 ```
 cat <<-EOF > /etc/yum.repos.d/kubernetes.repo
@@ -106,15 +117,6 @@ EOF
 ```
 把EOF之间的内容输出到/etc/yum.repos.d/kubernetes.repo文件，使用阿里云源
 
-###### 安装kubeadmin
-
-```
-sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
-sudo systemctl enable --now kubelet
-```
-
-#### [用kubeadm安装k8s集群](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
-
 #### 初始化一个只有主节点的k8s集群
 
 ```
@@ -126,10 +128,10 @@ kubeadm init \
 --pod-network-cidr=10.244.0.0/16
 ```
 - kubernetes-version: 用于指定k8s版本
-- apiserver-advertise-address: 用于指定kube-apiserver监听的ip地址,就是master本机IP地址。
-- pod-network-cidr: 用于指定Pod的网络范围； 10.244.0.0/16
-- service-cidr: 用于指定svc的网络范围；
-- image-repository: 指定阿里云镜像仓库地址。由于kubeadm默认从官网k8s.grc.io下载所需镜像，国内无法访问，因此需要通过–image-repository指定阿里云镜像仓库地址
+- apiserver-advertise-address: 用于指定kube-apiserver监听的ip地址,就是master本机IP地址
+- pod-network-cidr: 用于指定Pod的网络范围：10.244.0.0/16
+- service-cidr: 用于指定svc的网络范围
+- image-repository: 指定阿里云镜像仓库地址，由于kubeadm默认从官网k8s.grc.io下载所需镜像，国内无法访问，因此需要通过–image-repository指定阿里云镜像仓库地址
 
 集群初始化成功后返回如下信息：
 
@@ -152,9 +154,10 @@ as root:
   kubeadm join <control-plane-host>:<control-plane-port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>
 ```
 
-把`kubeadm join <control-plane-host>:<control-plane-port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>`这行保存下来，将来要在worker节点上执行
+`kubeadm join <control-plane-host>:<control-plane-port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>`
+这行保存下来，将来要在worker节点上执行
 
-###### 新增普通用户
+#### 新增非root用户
 
 为了能够在任何一台机器上都能管理k8s集群，需要在服务器上新增一个普通用户，并赋予sudo权限
 
@@ -167,9 +170,7 @@ su - guobin
 
 把guobin用户添加到wheel组就会自动拥有sudo权限，而不需要修改/etc/sudoers文件，这是一个小技巧
 
-###### 配置kubectl
-
-master节点
+#### 配置kubectl
 
 ```
 mkdir -p $HOME/.kube
@@ -177,24 +178,19 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-worker节点
-
-```
-mkdir -p $HOME/.kube
-sudo scp guobin@47.96.172.142:~/.kube/config $HOME/.kube #把config文件从master节点复制到本地
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-```
-
 这样普通用户就可以在任意节点上使用kubectl命令了
 
 #### [安装集群网络](https://kubernetes.io/docs/concepts/cluster-administration/networking/)
 
-kubernates的CNI网络插件有很多，这里我们选择安装flannel，因为它的通用性比较好，如果你的k8s是搭建在自建机房的裸机上的话，
-有些网络插件会有不兼容的情况。如果你使用的是云服务商提供的k8s集群那他们一般都会有自己的CNI。
+kubernates的CNI网络插件有很多，这里我们选择安装flannel，因为它的通用性比较好，如果你的k8s是搭建在自建机房的裸机上的话，有些网络插件会有不兼容的情况。如果你使用的是云服务商提供的k8s集群那他们一般都会有自己的CNI。
 
-在项目的`k8s-deployments/net/`目录下有我已经下载下来的网络的配置文件，你也可以通过命令`wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml`自行下载。
+```
+wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+```
 
-如果yml中的`"Network": "10.244.0.0/16"`和`kubeadm init xxx --pod-network-cidr`不一样，就需要修改成一样的。不然可能会使得Node间Cluster IP不通。由于我上面的kubeadm init xxx --pod-network-cidr就是10.244.0.0/16。所以此yaml文件就不需要更改了。
+如果yml中的"Network": "10.244.0.0/16"和kubeadm init xxx --pod-network-cidr不一样，就需要修改成一样的。不然可能会使得Node间Cluster IP不通。
+
+由于我上面的kubeadm init xxx --pod-network-cidr就是10.244.0.0/16。所以此yaml文件就不需要更改了。
 
 安装网络
 
@@ -202,43 +198,48 @@ kubernates的CNI网络插件有很多，这里我们选择安装flannel，因为
 kubectl apply -f kube-flannel.yml
 ```
 
-#### 查看Pod状态
+### Worker加入集群
 
-```
-kubectl get pod --all-namespaces -o wide
-```
+#### 修改主机名
 
-输出
-
-```
-NAMESPACE     NAME                                                       READY   STATUS    RESTARTS   AGE     IP              NODE           NOMINATED NODE   READINESS GATES                                1/1     Running   0          4d20h   10.244.1.108    k8s-worknode   <none>           <none>
-kube-system   coredns-7ff77c879f-gh8gf                                   1/1     Running   2          8d      10.244.0.7      k8s-master     <none>           <none>
-kube-system   coredns-7ff77c879f-rjfkk                                   1/1     Running   2          8d      10.244.0.6      k8s-master     <none>           <none>
-kube-system   etcd-k8s-master                                            1/1     Running   2          8d      172.19.96.118   k8s-master     <none>           <none>
-kube-system   kube-apiserver-k8s-master                                  1/1     Running   2          8d      172.19.96.118   k8s-master     <none>           <none>
-kube-system   kube-controller-manager-k8s-master                         1/1     Running   2          8d      172.19.96.118   k8s-master     <none>           <none>
-kube-system   kube-flannel-ds-tppxx                                      1/1     Running   2          8d      172.19.96.118   k8s-master     <none>           <none>
-kube-system   kube-proxy-td56t                                           1/1     Running   2          8d      172.19.96.118   k8s-master     <none>           <none>
-kube-system   kube-scheduler-k8s-master                                  1/1     Running   2          8d      172.19.96.118   k8s-master     <none>           <none>
-```
-
-#### worker加入集群
-
-###### 修改主机名
 ```
 hostnamectl set-hostname k8s-worknode
 ```
 
-###### 加入worker节点
+#### 新增非root用户
+
+为了能够在任何一台机器上都能管理k8s集群，需要在服务器上新增一个普通用户，并赋予sudo权限
+
+```
+adduser guobin
+passwd guobin
+usermod -aG wheel guobin
+su - guobin
+```
+
+把guobin用户添加到wheel组就会自动拥有sudo权限，而不需要修改/etc/sudoers文件，这是一个小技巧
+
+#### 配置kubectl
+
+```
+mkdir -p $HOME/.kube
+sudo scp guobin@47.96.172.142:~/.kube/config $HOME/.kube #把config文件从master节点复制过来
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+#### worker节点加入集群
 
 登录到worker节点，确保已经安装了docker和kubeadm，kubelet，kubectl
+
+执行你在master节点执行`kubeadm init ...`的时候保存下来的那串文本
 
 ```
 kubeadm join <control-plane-host>:<control-plane-port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>
 ```
-就是你在master节点执行`kubeadm init ...`时候它返回给你的那串东西
 
-#### 再次查看Pod状态
+### 最后
+
+#### 登录任意节点查看Pod状态
 
 ```
 kubectl get pod --all-namespaces -o wide
@@ -260,7 +261,7 @@ kube-system   kube-proxy-td56t                                           1/1    
 kube-system   kube-scheduler-k8s-master                                  1/1     Running   2          8d      172.19.96.118   k8s-master     <none>           <none>
 ```
 
-#### 登录到各节点，查看ip
+#### 登录到各节点查看IP
 
 ```
 ifconfig

@@ -1,8 +1,8 @@
-### 把你本地的go web应用制成容器镜像
+# 把你本地的go web应用制成容器镜像
 
 容器化可以基于docker或者containerd，推荐containerd，containerd还没来得及学，本案例采用docker
 
-#### 1. 创建一个简单的go web app
+### 1. 创建一个简单的go web app
 
 ```
 package main
@@ -51,7 +51,7 @@ func setupRoutes() {
 ```
 先不用去管每行代码在做什么，我们只是要学习如何本地化一个go的web app。
 
-#### 2. 定义容器镜像文件`Dockerfile`
+### 2. 创建Dockerfile容器镜像文件
 
 ```
 #基础镜像
@@ -80,11 +80,12 @@ CMD go run main.go
 ```
 注意：这里没有使用go mod，而以另一个go的包管理器`govendor`为例的
 
-#### 3. 构建容器镜像
+### 3. 构建容器镜像
 
 我们添加一个叫dockerize.sh的shell脚本来构建容器镜像
 
 dockerize.sh:
+
 ```
 docker build -t qiuguobin/go-web-app:latest .
 ```
@@ -94,15 +95,18 @@ docker build -t qiuguobin/go-web-app:latest .
 - go-web-app是镜像名
 - latest是标签名，通常以版本号作为标签名
 
-项目根目录下执行
+构建镜像
+
 ```
 chmod +x ./dockerize.sh
 ./dockerize.sh
 ```
 
-构建成功后我们执行`docker images`将会输出
+查看镜像
 
 ```
+docker images
+
 REPOSITORY                       TAG           IMAGE ID       CREATED        SIZE
 qiuguobin/go-web-app             latest        ee1c59b90288   4 days ago     891MB
 ```
@@ -113,36 +117,46 @@ qiuguobin/go-web-app             latest        ee1c59b90288   4 days ago     891
 docker run -it -p 3001:3001 qiuguobin/go-web-app
 ```
 
-输出
+正常输出
+
 ```
 Go Web App Started on Port 3001
 ```
 
 再来访问一下
+
 ```
 http://localhost:3001
 ```
 
-输出
+正常输出
+
 ```
 My Awesome Go App!!!
 ```
 
-说明我们的自定义镜像构建是ok的。
+说明我们的自定义镜像构建是ok的
 
-#### 4. 本地镜像上传dockerhub
+### 4. 上传dockerhub
 
-我们把本地的镜像上传到dockerhub，将来k8s集群才能够从dockerhub下载下来，所以我们先要上传
+我们把本地的镜像上传到dockerhub，将来k8s集群才能够从dockerhub下载下来
+
+先登录
 
 ```
-#这里会问你要用户名和密码，看到Login Succeeded表示成功
 docker login
+```
 
-#上传dockerhub
+这里会问你要用户名和密码，看到Login Succeeded表示成功
+
+然后推送到dockerhub
+
+```
 docker push guobinqiu/go-web-app
 ```
-你可以在dockerhub的网站上或者通过桌面端查看到你上传的镜像
 
-补充：
+推送完成后你可以在dockerhub的网站或者通过本地桌面端查看到你上传的镜像
+
+### 其他
+
 这里的镜像是public的，还需要考虑如果把访问权限设置成[private](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)后对k8s容器拉取时候的差异。另外，如果项目复杂的话，可以考虑用jenkins来一键构建并上传镜像
-****
