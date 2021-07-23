@@ -60,7 +60,7 @@ Guobins-MBP:k8s-deployments guobin$ tree
 
 先搞清楚这些概念
 
-要用kubernates发布一个go web应用，主要经历3大过程
+### 要用kubernates发布一个go web应用，主要经历3大过程
 
 1. [搭建kubernates集群](install-cluster.md)有多种方式
    - 购买现成的各家云服务商已经整合好的集群服务
