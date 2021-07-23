@@ -2,13 +2,13 @@
 
 以下所有的发布都到默认的namespace：`default`，namespace可以用来区分发布环境，如`namespace=staging, namespace=dev`等
 
-### 部署go web服务
+## 部署go web服务
 
 ```
 cd ./k8s-deployments/app
 ```
 
-#### 创建一个deployment
+## 创建一个deployment
 
 从qiuguobin的dockerhub上拉取镜像部署到集群
 
@@ -26,7 +26,7 @@ default       go-web-app-deployment-6fd8d76dff-ww6g5                     1/1    
 ...
 ```
 
-#### 创建一个service
+## 创建一个service
 
 暴露deployment创建的pods供集群外部访问，暴露端口为：30000（NodePort方式）
 
@@ -44,13 +44,13 @@ go-web-service                            NodePort    10.1.12.74    <none>      
 ...
 ```
 
-### 部署mysql服务
+## 部署mysql服务
 
 ```
 cd ./k8s-deployments/mysql
 ```
 
-#### 创建一个本地磁盘存储
+## 创建一个本地磁盘存储
 
 ```
 [guobin@k8s-master ~]$ kubectl apply -f mysql-pv.yml
@@ -74,7 +74,7 @@ pod <--> pvc <--> pv good
 从设计模式上来说，pod不直接绑定pv，而是通过绑定pvc，再由pvc去绑定pv，其实是起到了pod和pv之间解耦的作用，
 类似于两张多对多的表会通过加中间表去做关联一样的道理
 
-#### 创建一个环境变量文件
+## 创建一个环境变量文件
 
 ```
 [guobin@k8s-master ~]$ kubectl apply -f mysql-secret.yml
@@ -84,7 +84,7 @@ NAME                                  TYPE                                  DATA
 mysql-secret                          Opaque                                4      5d22h
 ```
 
-#### 创建一个deployment
+## 创建一个deployment
 
 ```
 [guobin@k8s-master ~]$ kubectl apply -f mysql-deployment.yml
@@ -103,7 +103,7 @@ default       mysql-6db984b79d-jq7qq                                     1/1    
 ...
 ```
 
-#### 创建一个service
+## 创建一个service
 
 不允许外部访问，只能集群内部之间访问（ClusterIP类型）
 
@@ -117,7 +117,7 @@ mysql                                     ClusterIP   None          <none>      
 ...
 ```
 
-####  插入数据
+##  插入数据
 
 ```
 kubectl exec -it mysql-6db984b79d-jq7qq /bin/sh #进到容器内
@@ -144,7 +144,7 @@ Query OK, 2 rows affected (0.02 sec)
 Records: 2  Duplicates: 0  Warnings: 0
 ```
 
-#### 删除数据
+## 删除数据
 
 除了删除持久化存储
 
@@ -159,7 +159,7 @@ kubectl delete pv mysql-pv-volume
 rm -rf /mnt/data
 ```
 
-### 部署haproxy ingress服务
+## 部署haproxy ingress服务
 
 ```
 cd ./k8s-deployments/haproxy
@@ -179,7 +179,7 @@ $ ./get_helm.sh
 
 >https://helm.sh/docs/intro/install/#from-the-binary-releases
 
-#### 更新helm源
+## 更新helm源
 
 ```
 helm repo add stable https://charts.helm.sh/stable
@@ -196,7 +196,7 @@ stable   	https://charts.helm.sh/stable
 incubator	https://charts.helm.sh/incubator
 ```
 
-#### helm安装haproxy ingress
+## helm安装haproxy ingress
 
 > https://github.com/haproxy-ingress/charts
 
@@ -219,7 +219,7 @@ haproxy-haproxy-ingress-default-backend   1/1     1            1           24h
 ...
 ```
 
-#### 创建一个转发规则
+## 创建一个转发规则
 
 这里直接转发所有外部流量到后端服务，未做任何分流处理
 
@@ -239,7 +239,7 @@ default       haproxy-haproxy-ingress-default-backend-5b74fff5f7-gtxrs   1/1    
 ...
 ```
 
-### 优化
+## 优化
 
 生产环境我们访问网站都会使用80和433端口，这样可以省略口端号，而k8s的NodePort给我们暴露
 的端口规定要从30000开始，为了隐藏NodePort暴露的端口，我申请了一个负载均衡SLB服务，IP为`121.40.221.176`，

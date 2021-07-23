@@ -4,14 +4,15 @@
 cd ./k8s-deployments/dashboard
 ```
 
-### 下载安装文件
+## 下载安装文件
 
 ```
 wget https://raw.githubusercontent.com/kubernetes/dashboard/v2.3.1/aio/deploy/recommended.yaml
 ```
+
 url中v2.3.1换成你对应的[版本](https://github.com/kubernetes/dashboard/releases)
 
-### 重命名
+## 重命名
 
 重命名`recommended.yaml`为`kubernetes-dashboard-deployment.yml`
 
@@ -19,7 +20,7 @@ url中v2.3.1换成你对应的[版本](https://github.com/kubernetes/dashboard/r
 mv recommended.yaml kubernetes-dashboard-deployment.yml
 ```
 
-### 修改成internet可访问
+## 修改成internet可访问
 
 编辑`kubernetes-dashboard-deployment.yml`文件，修改Service部分的配置为对外暴露`30002`端口
 
@@ -41,7 +42,7 @@ spec:
   type: NodePort      #修改点
 ```
 
-### 安装dashboard
+## 安装dashboard
 
 ```
 kubectl apply -f kubernetes-dashboard-deployment.yml
@@ -56,7 +57,7 @@ kubectl get service -n kubernetes-dashboard
 
 ![signin](./img/signin.png)
 
-### 创建用户
+## 创建用户
 
 创建一个admin用户，名字叫`admin-user`
 
@@ -64,19 +65,19 @@ kubectl get service -n kubernetes-dashboard
 kubectl apply -f admin-user.yml
 ```
 
-### 创建角色绑定
+## 创建角色绑定
 
 ```
 kubectl apply -f admin-rbac.yml
 ```
 
-### 获取用户token
+## 获取用户token
 
 ```
 kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
 ```
 
-### 登录
+## 登录
 
 输入token进行登录
 

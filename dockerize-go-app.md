@@ -2,7 +2,7 @@
 
 容器化可以基于docker或者containerd，推荐containerd，containerd还没来得及学，本案例采用docker
 
-### 1. 创建一个简单的go web app
+## 1. 创建一个简单的go web app
 
 ```
 package main
@@ -51,7 +51,7 @@ func setupRoutes() {
 ```
 先不用去管每行代码在做什么，我们只是要学习如何本地化一个go的web app。
 
-### 2. 创建Dockerfile容器镜像文件
+## 2. 创建Dockerfile容器镜像文件
 
 ```
 #基础镜像
@@ -80,7 +80,7 @@ CMD go run main.go
 ```
 注意：这里没有使用go mod，而以另一个go的包管理器`govendor`为例的
 
-### 3. 构建容器镜像
+## 3. 构建容器镜像
 
 我们添加一个叫dockerize.sh的shell脚本来构建容器镜像
 
@@ -137,7 +137,7 @@ My Awesome Go App!!!
 
 说明我们的自定义镜像构建是ok的
 
-### 4. 上传dockerhub
+## 4. 上传dockerhub
 
 我们把本地的镜像上传到dockerhub，将来k8s集群才能够从dockerhub下载下来
 
@@ -157,6 +157,6 @@ docker push guobinqiu/go-web-app
 
 推送完成后你可以在dockerhub的网站或者通过本地桌面端查看到你上传的镜像
 
-### 其他
+## 其他
 
 这里的镜像是public的，还需要考虑如果把访问权限设置成[private](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)后对k8s容器拉取时候的差异。另外，如果项目复杂的话，可以考虑用jenkins来一键构建并上传镜像
