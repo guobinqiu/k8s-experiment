@@ -18,7 +18,7 @@
 
 系统|内网IP|公网IP|主机名|主机配置|节点类型
 ---|---|---|---|---|---
-CentOS 7.9 64位|172.19.96.118|47.96.172.142|k8s-masternode|1核 2GiB|master & workder
+CentOS 7.9 64位|172.19.96.118|47.96.172.142|k8s-masternode|1核 2GiB|master & worker
 CentOS 7.9 64位|172.19.44.93|47.98.221.22|k8s-worknode|1核 2GiB|worker
 
 注意：官方推荐CPU至少2核，内存2G，由于我CPU是1核，在安装时需要忽略配置检查`kubeadm init ... --ignore-preflight-errors=NumCPU`
