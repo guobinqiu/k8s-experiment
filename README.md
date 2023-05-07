@@ -1,5 +1,4 @@
-Publish a go web application based on kubernates
----
+# Publish a go web application based on kubernates
 
 [简体中文](README_CN.md)
 
@@ -14,3 +13,7 @@ To publish a go web application with kubernates, there are mainly three major pr
 2. [Make your local go web application into a container image](dockerize-go-app.md)
 3. [Run the container image in the kubernates cluster](deploy-to-cluster.md)
 4. [Install Kubernetes Dashboard](dashboard.md)
+
+## License
+
+MIT
