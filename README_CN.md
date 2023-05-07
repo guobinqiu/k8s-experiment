@@ -1,13 +1,12 @@
 基于Kubernates发布一个go web应用
----
 
 [English](README.md)  
 
-### 架构图
+## 架构图
 
 ![arch](./img/arch.png)
 
-### 发布所使用的配置文件的目录结构
+## 发布所使用的配置文件的目录结构
 
 ```
 Guobins-MBP:k8s-deployments guobin$ tree
@@ -58,7 +57,7 @@ Guobins-MBP:k8s-deployments guobin$ tree
 - [secret](https://kubernetes.io/docs/concepts/configuration/secret/)
 - ...
 
-### 要用kubernates发布一个go web应用，主要经历3大过程
+## 要用kubernates发布一个go web应用，主要经历3大过程
 
 1. [搭建kubernates集群](install-cluster.md)有多种方式
    - 购买现成的各家云服务商已经整合好的集群服务
@@ -68,3 +67,7 @@ Guobins-MBP:k8s-deployments guobin$ tree
 2. [把你本地的go web应用制成容器镜像](dockerize-go-app.md)
 3. [把容器镜像跑在kubernates集群里](deploy-to-cluster.md)
 4. [安装监控](dashboard.md)
+
+## License
+
+MIT
