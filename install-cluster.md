@@ -288,7 +288,7 @@ flannel.1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1450
 
 关于Ubuntu下的安装
 
-更新软件源安装kubectl kubeadm kubelet containerd
+1.更新软件源安装kubectl kubeadm kubelet containerd
 
 ```
 curl -fsSL https://mirrors.aliyun.com/kubernetes-new/core/stable/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
@@ -300,7 +300,7 @@ sudo apt update
 sudo apt install kubectl kubeadm kubelet containerd
 ```
 
-生成一个配置集群的模板文件
+2.生成一个配置集群的模板文件
 
 ```
 kubeadm config print init-defaults > kubeadmin-config.yaml
@@ -352,18 +352,17 @@ networking:
 scheduler: {}
 ```
 
-安装集群
+3.安装集群
 
 ```
 sudo kubeadm init --config kubeadm-config.yaml
 ```
 
-如果安装失败
+安装失败
 
-```
-vi /etc/containerd/config.toml
-```
-把sandbox_image替换成`registry.aliyuncs.com/google_containers/pause:3.9` (如果你当前是3.8, 它推荐你安装3.9, 虽然只是推荐但是不修改init不会成功)
+沙箱问题: 把`/etc/containerd/config.toml`文件里的`sandbox_image`替换成`registry.aliyuncs.com/google_containers/pause:3.9` (如果你当前是3.8, 它推荐你安装3.9, 虽然只是推荐但是不修改init不会成功)
+
+kubelet启动失败: 可能启动参数不对, 从`/var/lib/kubelet/kubeadm-flags.env`文件删除`--container-runtime=remote`
 
 worker节点加入集群
 
