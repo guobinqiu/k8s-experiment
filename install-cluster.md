@@ -358,11 +358,28 @@ scheduler: {}
 sudo kubeadm init --config kubeadm-config.yaml
 ```
 
-安装失败
+如果安装失败
 
 ```
 vi /etc/containerd/config.toml
 ```
 把sandbox_image替换成`registry.aliyuncs.com/google_containers/pause:3.9` (如果你当前是3.8, 它推荐你安装3.9, 虽然只是推荐但是不修改init不会成功)
 
-后面就和上面的centos一样
+worker节点加入集群
+
+```
+kubeadm join 192.168.1.9:6443 --token abcdef.0123456789abcdef  --discovery-token-ca-cert-hash sha256:9f792067a16addee3a5f60150feb0289008db84c9d3711af3a4ce6fbcbd4f3a8
+```
+
+```
+guobin@ubuntu02:~$ kubectl get nodes
+NAME       STATUS   ROLES           AGE    VERSION
+ubuntu02   Ready    control-plane   4d3h   v1.30.4
+```
+
+去污点
+
+```
+kubectl taint nodes ubuntu02 node-role.kubernetes.io/control-plane-
+```
+如果是单机集群要去污点, control-plane后面加个减号, 允许pod调度到control plane节点上
