@@ -283,3 +283,86 @@ flannel.1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1450
 多出了一块flannel.1网卡，它是用来做集群内部网络通信的
 
 这样kubernates集群搭建就ok了
+
+## 补充
+
+关于Ubuntu下的安装
+
+更新软件源安装kubectl kubeadm kubelet containerd
+
+```
+curl -fsSL https://mirrors.aliyun.com/kubernetes-new/core/stable/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://mirrors.aliyun.com/kubernetes-new/core/stable/v1.30/deb/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+ 
+sudo apt update
+
+sudo apt install kubectl kubeadm kubelet containerd
+```
+
+生成一个配置集群的模板文件
+
+```
+kubeadm config print init-defaults > kubeadmin-config.yaml
+```
+
+修改后如下
+
+```
+apiVersion: kubeadm.k8s.io/v1beta3
+bootstrapTokens:
+- groups:
+  - system:bootstrappers:kubeadm:default-node-token
+  token: abcdef.0123456789abcdef
+  ttl: 24h0m0s
+  usages:
+  - signing
+  - authentication
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: 192.168.1.9
+  bindPort: 6443
+nodeRegistration:
+  criSocket: unix:///var/run/containerd/containerd.sock
+  imagePullPolicy: IfNotPresent
+  name: ubuntu02
+  taints: null
+  containerRuntime:
+    type: Remote
+    remoteRuntimeEndpoint: unix:///var/run/containerd/containerd.sock
+    sandboxImage: registry.aliyuncs.com/google_containers/pause:3.9
+---
+apiServer:
+  timeoutForControlPlane: 4m0s
+apiVersion: kubeadm.k8s.io/v1beta3
+certificatesDir: /etc/kubernetes/pki
+clusterName: kubernetes
+controllerManager: {}
+dns: {}
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+imageRepository: registry.aliyuncs.com/google_containers
+kind: ClusterConfiguration
+kubernetesVersion: 1.30.4
+networking:
+  podSubnet: 10.244.0.0/16
+  dnsDomain: cluster.local
+  serviceSubnet: 10.96.0.0/12
+scheduler: {}
+```
+
+安装集群
+
+```
+sudo kubeadm init --config kubeadm-config.yaml
+```
+
+安装失败
+
+```
+vi /etc/containerd/config.toml
+```
+把sandbox_image替换成`registry.aliyuncs.com/google_containers/pause:3.9` (如果你当前是3.8, 它推荐你安装3.9, 虽然只是推荐但是不修改init不会成功)
+
+后面就和上面的centos一样
