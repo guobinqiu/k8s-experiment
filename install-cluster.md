@@ -355,7 +355,7 @@ scheduler: {}
 3.安装集群
 
 ```
-sudo kubeadm init --config kubeadm-config.yaml
+sudo kubeadm init --config kubeadmin-config.yaml
 ```
 
 安装失败
