@@ -408,7 +408,7 @@ sudo systemctl restart kubelet
 允许pod调度到master节点, 因为这里我只有这一个单节点来做集群
 
 ```
-kubectl taint nodes node  node.kubernetes.io/not-ready:NoSchedule-
+kubectl taint nodes ubuntu01 node.kubernetes.io/not-ready:NoSchedule-
 ```
 
 重新安装
