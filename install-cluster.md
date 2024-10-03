@@ -320,17 +320,13 @@ bootstrapTokens:
   - authentication
 kind: InitConfiguration
 localAPIEndpoint:
-  advertiseAddress: 192.168.1.9
+  advertiseAddress: 192.168.1.4
   bindPort: 6443
 nodeRegistration:
   criSocket: unix:///var/run/containerd/containerd.sock
   imagePullPolicy: IfNotPresent
-  name: ubuntu02
+  name: node
   taints: null
-  containerRuntime:
-    type: Remote
-    remoteRuntimeEndpoint: unix:///var/run/containerd/containerd.sock
-    sandboxImage: registry.aliyuncs.com/google_containers/pause:3.9
 ---
 apiServer:
   timeoutForControlPlane: 4m0s
@@ -344,13 +340,17 @@ etcd:
     dataDir: /var/lib/etcd
 imageRepository: registry.aliyuncs.com/google_containers
 kind: ClusterConfiguration
-kubernetesVersion: 1.30.4
+#kubernetesVersion: 1.28.0
 networking:
-  podSubnet: 10.244.0.0/16
   dnsDomain: cluster.local
-  serviceSubnet: 10.96.0.0/12
+  serviceSubnet: 10.95.0.0/12
+  podSubnet: 10.245.0.0/16
 scheduler: {}
 ```
+- advertiseAddress 我的虚拟机IP, apiserver连这个地址
+- podSubnet Pod网络的地址范围,默认10.244.0.0/16, podSubnet需要与你的网络插件（如 Flannel）配置相匹配, 我有另外一个集群使用了默认配置, 为了不冲突改成10.245.0.0/16
+- serviceSubnet Service的虚拟IP地址范围, 默认10.96.0.0/12, 我有另外一个集群使用了默认配置, 为了不冲突改成10.95.0.0/12
+- imageRepository改成阿里云镜像registry.aliyuncs.com/google_containers
 
 3.安装集群
 
@@ -364,7 +364,7 @@ sudo kubeadm init --config kubeadmin-config.yaml
 
 kubelet启动失败: 可能启动参数不对, 从`/var/lib/kubelet/kubeadm-flags.env`文件删除`--container-runtime=remote`
 
-worker节点加入集群
+worker节点加入集群 (可选, 单节点不需要执行)
 
 ```
 kubeadm join 192.168.1.9:6443 --token abcdef.0123456789abcdef  --discovery-token-ca-cert-hash sha256:9f792067a16addee3a5f60150feb0289008db84c9d3711af3a4ce6fbcbd4f3a8
@@ -376,9 +376,28 @@ NAME       STATUS   ROLES           AGE    VERSION
 ubuntu02   Ready    control-plane   4d3h   v1.30.4
 ```
 
-去污点
+本地测试CNI用flannel网络
+
+https://github.com/flannel-io/flannel/blob/master/README.md
 
 ```
-kubectl taint nodes ubuntu02 node-role.kubernetes.io/control-plane-
+net-conf.json: |
+    {
+      "Network": "10.245.0.0/16",
+      "EnableNFTables": false,
+      "Backend": {
+        "Type": "vxlan"
+      }
+    }
 ```
-如果是单机集群要去污点, control-plane后面加个减号, 允许pod调度到control plane节点上
+
+- 修改Network, 它要和podSubnet保持一致
+- image从docker.io改成docker.m.daocloud.io
+
+最后
+
+如果集群启动有问题, 尝试重启kubelet重新加载更新后的配置文件, 重启过程中各种错误先不用管, 等待一段时间再看
+
+```
+sudo systemctl restart kubelet
+```
