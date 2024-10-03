@@ -325,7 +325,7 @@ localAPIEndpoint:
 nodeRegistration:
   criSocket: unix:///var/run/containerd/containerd.sock
   imagePullPolicy: IfNotPresent
-  name: node
+  name: ubuntu01
   taints: null
 ---
 apiServer:
@@ -351,6 +351,7 @@ scheduler: {}
 - podSubnet Pod网络的地址范围,默认10.244.0.0/16, podSubnet需要与你的网络插件（如 Flannel）配置相匹配, 我有另外一个集群使用了默认配置, 为了不冲突改成10.245.0.0/16
 - serviceSubnet Service的虚拟IP地址范围, 默认10.96.0.0/12, 我有另外一个集群使用了默认配置, 为了不冲突改成10.95.0.0/12
 - imageRepository改成阿里云镜像registry.aliyuncs.com/google_containers
+- name 和主机名一致我的叫ubuntu01
 
 3.安装集群
 
@@ -400,6 +401,14 @@ net-conf.json: |
 
 ```
 sudo systemctl restart kubelet
+```
+
+去污点
+
+允许pod调度到master节点, 因为这里我只有这一个单节点来做集群
+
+```
+kubectl taint nodes node  node.kubernetes.io/not-ready:NoSchedule-
 ```
 
 重新安装
