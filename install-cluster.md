@@ -367,7 +367,7 @@ kubelet启动失败: 可能启动参数不对, 从`/var/lib/kubelet/kubeadm-flag
 worker节点加入集群 (可选, 单节点不需要执行)
 
 ```
-kubeadm join 192.168.1.9:6443 --token abcdef.0123456789abcdef  --discovery-token-ca-cert-hash sha256:9f792067a16addee3a5f60150feb0289008db84c9d3711af3a4ce6fbcbd4f3a8
+sudo kubeadm join 192.168.1.9:6443 --token abcdef.0123456789abcdef  --discovery-token-ca-cert-hash sha256:9f792067a16addee3a5f60150feb0289008db84c9d3711af3a4ce6fbcbd4f3a8
 ```
 
 ```
@@ -400,4 +400,20 @@ net-conf.json: |
 
 ```
 sudo systemctl restart kubelet
+```
+
+重新安装
+
+```
+sudo kubeadm reset
+sudo rm -rf ls /var/lib/etcd
+sudo rm -rf /etc/kubernetes
+sudo rm -rf /etc/cni/net.d/
+sudo rm -rf $HOME/.kube/config
+sudo iptables -F
+sudo kubeadm init --config kubeadmin-config.yaml
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
