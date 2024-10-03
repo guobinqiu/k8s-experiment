@@ -397,18 +397,18 @@ net-conf.json: |
 
 最后
 
-如果集群启动有问题, 尝试重启kubelet重新加载更新后的配置文件, 重启过程中各种错误先不用管, 等待一段时间再看
-
-```
-sudo systemctl restart kubelet
-```
-
 去污点
 
 允许pod调度到master节点, 因为这里我只有这一个单节点来做集群
 
 ```
 kubectl taint nodes ubuntu01 node.kubernetes.io/not-ready:NoSchedule-
+```
+
+如果集群启动有问题, 尝试重启kubelet重新加载更新后的配置文件, 重启过程中各种错误先不用管, 等待一段时间再看
+
+```
+sudo systemctl restart kubelet
 ```
 
 重新安装
