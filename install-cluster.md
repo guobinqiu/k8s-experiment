@@ -403,6 +403,7 @@ net-conf.json: |
 
 ```
 kubectl taint nodes ubuntu01 node.kubernetes.io/not-ready:NoSchedule-
+kubectl taint nodes ubuntu01 node-role.kubernetes.io/control-plane-
 ```
 
 如果集群启动有问题, 尝试重启kubelet重新加载更新后的配置文件, 重启过程中各种错误先不用管, 等待一段时间再看
@@ -419,7 +420,9 @@ sudo rm -rf ls /var/lib/etcd
 sudo rm -rf /etc/kubernetes
 sudo rm -rf /etc/cni/net.d/
 sudo rm -rf $HOME/.kube/config
-sudo iptables -F
+kubectl drain ubuntu01 --delete-emptydir-data --force --ignore-daemonsets
+sudo iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+sudo ipvsadm -C
 sudo kubeadm init --config kubeadmin-config.yaml
 
 mkdir -p $HOME/.kube
