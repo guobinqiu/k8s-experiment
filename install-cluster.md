@@ -457,6 +457,8 @@ sudo systemctl restart kubelet
 
 ```
 sudo kubeadm reset
+
+# 删除相关目录
 sudo rm -rf ls /var/lib/etcd
 sudo rm -rf /etc/kubernetes
 sudo rm -rf /etc/cni/net.d/
