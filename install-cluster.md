@@ -461,12 +461,15 @@ sudo rm -rf ls /var/lib/etcd
 sudo rm -rf /etc/kubernetes
 sudo rm -rf /etc/cni/net.d/
 sudo rm -rf $HOME/.kube/config
-kubectl drain ubuntu01 --delete-emptydir-data --force --ignore-daemonsets
-sudo iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
-sudo ipvsadm -C
-sudo kubeadm init --config kubeadmin-config.yaml
 
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+# 排空节点
+kubectl drain ubuntu01 --delete-emptydir-data --force --ignore-daemonsets 
+
+# 清空 iptables 规则
+sudo iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+
+# 清空 ipvs 表（如果使用 ipvs 模式）
+sudo ipvsadm -C
+
+sudo kubeadm init --config kubeadmin-config.yaml
 ```
