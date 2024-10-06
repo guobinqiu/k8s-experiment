@@ -402,8 +402,9 @@ sudo sysctl -p
 如果没有`/etc/containerd/config.toml`的话生成container配置文件
 
 ```
-mkdir -p /etc/containerd
-containerd config default > /etc/containerd/config.toml
+sudo mkdir -p /etc/containerd
+sudo containerd config default > /etc/containerd/config.toml
+sudo systemctl restart containerd
 ```
 
 kubelet启动失败: 可能启动参数不对, 从`/var/lib/kubelet/kubeadm-flags.env`文件删除`--container-runtime=remote`
