@@ -288,19 +288,21 @@ flannel.1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1450
 
 关于Ubuntu下的安装
 
-1.更新软件源安装kubectl kubeadm kubelet containerd
+### 1.更新软件源安装kubectl kubeadm kubelet containerd
 
 ```
+添加 GPG Key
 curl -fsSL https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
+添加 k8s 软件源
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
- 
+
 sudo apt update
 
 sudo apt install kubectl kubeadm kubelet containerd
 ```
 
-2.生成一个配置集群的模板文件
+### 2.生成一个配置集群的模板文件
 
 ```
 kubeadm config print init-defaults > kubeadmin-config.yaml
@@ -353,7 +355,7 @@ scheduler: {}
 - imageRepository改成阿里云镜像registry.aliyuncs.com/google_containers
 - name 和主机名一致我的叫ubuntu01
 
-3.安装集群
+### 3.安装集群
 
 ```
 sudo kubeadm init --config kubeadmin-config.yaml
@@ -361,7 +363,48 @@ sudo kubeadm init --config kubeadmin-config.yaml
 
 安装失败
 
-沙箱问题: 把`/etc/containerd/config.toml`文件里的`sandbox_image`替换成`registry.aliyuncs.com/google_containers/pause:3.9` (如果你当前是3.8, 它推荐你安装3.9, 虽然只是推荐但是不修改init不会成功)
+[ERROR FileContent--proc-sys-net-bridge-bridge-nf-call-iptables]: /proc/sys/net/bridge/bridge-nf-call-iptables does not exist
+
+安装桥接模块
+
+```
+sudo modprobe br_netfilter
+
+# 确认文件存在并且内容正确
+ls -l /proc/sys/net/bridge/bridge-nf-call-iptables
+
+# 如果文件仍然不存在，可以尝试创建它
+echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+# 为了确保重启后仍然生效，可以将 br_netfilter 模块添加到 /etc/modules 文件中
+echo 'br_netfilter' | sudo tee -a /etc/modules
+```
+
+[ERROR FileContent--proc-sys-net-ipv4-ip_forward]: /proc/sys/net/ipv4/ip_forward contents are not set to 1
+
+启用IPv4转发
+
+```
+# 确保IPv4转发已启用
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+# 为了确保重启后仍然生效，可以将以下行添加到 /etc/sysctl.conf 文件
+echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
+
+# 应用更新
+sudo sysctl -p
+```
+
+沙箱问题
+
+把`/etc/containerd/config.toml`文件里的`sandbox_image`替换成`registry.aliyuncs.com/google_containers/pause:3.9` (如果你当前是3.8, 它推荐你安装3.9, 虽然只是推荐但是不修改init不会成功)
+
+如果没有`/etc/containerd/config.toml`的话生成container配置文件
+
+```
+mkdir -p /etc/containerd
+containerd config default > /etc/containerd/config.toml
+```
 
 kubelet启动失败: 可能启动参数不对, 从`/var/lib/kubelet/kubeadm-flags.env`文件删除`--container-runtime=remote`
 
@@ -395,8 +438,6 @@ net-conf.json: |
 - 修改Network, 它要和podSubnet保持一致
 - image从docker.io改成docker.m.daocloud.io
 
-最后
-
 去污点
 
 允许pod调度到master节点, 因为这里我只有这一个单节点来做集群
@@ -412,7 +453,7 @@ kubectl taint nodes ubuntu01 node-role.kubernetes.io/control-plane-
 sudo systemctl restart kubelet
 ```
 
-重新安装
+### 重新安装
 
 ```
 sudo kubeadm reset
