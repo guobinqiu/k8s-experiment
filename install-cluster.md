@@ -457,6 +457,9 @@ sudo systemctl restart kubelet
 ### 重新安装
 
 ```
+# 排空节点
+kubectl drain ubuntu01 --delete-emptydir-data --force --ignore-daemonsets
+
 sudo kubeadm reset
 
 # 删除相关目录
@@ -465,11 +468,11 @@ sudo rm -rf /etc/kubernetes
 sudo rm -rf /etc/cni/net.d/
 sudo rm -rf $HOME/.kube/config
 
-# 排空节点
-kubectl drain ubuntu01 --delete-emptydir-data --force --ignore-daemonsets 
-
 # 清空 iptables 规则
-sudo iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+sudo iptables -F
+sudo iptables -t nat -F
+sudo iptables -t mangle -F
+sudo iptables -X
 
 # 清空 ipvs 表（如果使用 ipvs 模式）
 sudo ipvsadm -C
